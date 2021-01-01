@@ -3,6 +3,17 @@
 This is a command line tool that allows you to share files with Apple devices using AirDrop from your terminal.
 
 ## Installation
+### Homebrew
+```
+brew install vldmrkl/formulae/airdrop-cli
+```
+or
+```
+brew tap vldmrkl/formulae
+brew install ardrop-cli
+```
+
+
 ### Manually
 
 ```
