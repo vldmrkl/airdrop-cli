@@ -63,8 +63,12 @@ class AirDropCLI:  NSObject, NSApplicationDelegate, NSSharingServiceDelegate {
         var filesToShare: [URL] = []
 
         for pathToFile in pathsToFiles {
-            let fileURL: URL = NSURL.fileURL(withPath: pathToFile, isDirectory: false)
-            filesToShare.append(fileURL.standardizedFileURL)
+            if let url = URL(string: pathToFile), url.scheme != nil {
+                filesToShare.append(url)
+            } else {
+                let fileURL: URL = NSURL.fileURL(withPath: pathToFile, isDirectory: false)
+                filesToShare.append(fileURL.standardizedFileURL)
+            }
         }
 
         if service.canPerform(withItems: filesToShare) {
