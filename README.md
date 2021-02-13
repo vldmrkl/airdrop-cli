@@ -1,6 +1,6 @@
 # airdrop-cli
 
-This is a command line tool that allows you to share files with Apple devices using AirDrop from your terminal.
+This is a command line tool that allows you to share files and URLs with Apple devices using AirDrop from your terminal.
 
 ## Installation
 ### Homebrew
@@ -29,6 +29,11 @@ make install
 To airdrop files, run:
 ```
 airdrop /path/to/your/file
+```
+
+You can also airdrop URLs:
+```
+airdrop https://apple.com/
 ```
 
 You can pass as many paths as you want. As long as theese file URLs are correct, the command will work.

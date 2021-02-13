@@ -26,7 +26,7 @@ class ConsoleIO {
         let executableName = (CommandLine.arguments[0] as NSString).lastPathComponent
 
         writeMessage("usage: \(executableName) [<args>]")
-        writeMessage("    args – paths to files, which you you'd like to AirDrop")
+        writeMessage("    args – URLs or paths to files, which you'd like to AirDrop")
         writeMessage("\nOPTIONS:")
         writeMessage("    -h, --help – print help info")
     }
