@@ -10,7 +10,7 @@ brew install vldmrkl/formulae/airdrop-cli
 or
 ```
 brew tap vldmrkl/formulae
-brew install ardrop-cli
+brew install airdrop-cli
 ```
 
 
