@@ -3,6 +3,10 @@
 This is a command line tool that allows you to share files and URLs with Apple devices using AirDrop from your terminal.
 
 ## Installation
+
+### Prerequisites
+You need to have Xcode version 11.4 or higher installed.
+
 ### Homebrew
 ```
 brew install vldmrkl/formulae/airdrop-cli
