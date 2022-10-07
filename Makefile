@@ -5,10 +5,11 @@ build:
 	swift build -c release --disable-sandbox $(FLAGS)
 
 install: build
-	install ".build/release/airdrop" "$(BINDIR)"
+	install -d $(DESTDIR)$(BINDIR)
+	install ".build/release/airdrop" "$(DESTDIR)$(BINDIR)"
 
 uninstall:
-	rm -rf $(BINDIR)/airdrop
+	rm -rf $(DESTDIR)$(BINDIR)/airdrop
 
 clean:
 	rm -rf .build
