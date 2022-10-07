@@ -6,7 +6,7 @@ build:
 
 install: build
 	install -d $(DESTDIR)$(BINDIR)
-	install ".build/release/airdrop" "$(DESTDIR)$(BINDIR)"
+	install -m755 ".build/release/airdrop" "$(DESTDIR)$(BINDIR)"
 
 uninstall:
 	rm -rf $(DESTDIR)$(BINDIR)/airdrop
