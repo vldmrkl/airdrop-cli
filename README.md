@@ -5,7 +5,7 @@ devices using AirDrop from your terminal.
 
 ## Installation
 
-`airdrop-cli` is available for install with Homebrew
+`airdrop-cli` is available for install with [Homebrew](https://brew.sh/)
 
 ```
 brew install vldmrkl/formulae/airdrop-cli
@@ -21,7 +21,7 @@ brew install airdrop-cli
 ### Building from source
 
 Before attempting to build this project from its source code, make sure
-that you have Xcode version 11.4 (or higher) & GNU make installed.
+that you have Xcode version 11.4 (or higher) & GNU `make` installed.
 
 Then, clone the project and use the Makefile
 
