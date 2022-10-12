@@ -1,16 +1,19 @@
-prefix ?= /usr/local
-bindir = $(prefix)/bin
+PREFIX ?= /usr/local
+BINDIR := $(PREFIX)/bin
+
+all: build
 
 build:
-	swift build -c release --disable-sandbox
+	swift build -c release --disable-sandbox $(FLAGS)
 
 install: build
-	install ".build/release/airdrop" "$(bindir)"
+	install -d $(DESTDIR)$(BINDIR)
+	install -m755 ".build/release/airdrop" "$(DESTDIR)$(BINDIR)"
 
 uninstall:
-	rm -rf "$(bindir)/airdrop"
+	rm -rf $(DESTDIR)$(BINDIR)/airdrop
 
 clean:
 	rm -rf .build
 
-.PHONY: build install uninstall clean
+.PHONY: all build install uninstall clean
