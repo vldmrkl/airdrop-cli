@@ -48,6 +48,10 @@ class AirDropCLI:  NSObject, NSApplicationDelegate, NSSharingServiceDelegate {
         let pathsToFiles = Array(CommandLine.arguments[1 ..< argCount])
 
         shareFiles(pathsToFiles)
+
+        if #available(macOS 13.0, *) {
+            NSApp.setActivationPolicy(.accessory)
+        }
     }
 
     func getOption(_ option: String) -> (option:OptionType, value: String) {
