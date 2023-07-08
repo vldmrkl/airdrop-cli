@@ -115,6 +115,7 @@ class AirDropCLI:  NSObject, NSApplicationDelegate, NSSharingServiceDelegate {
 
         airDropMenuWindow.center()
         airDropMenuWindow.level = .popUpMenu
+        airDropMenuWindow.makeKeyAndOrderFront(nil)
 
         return airDropMenuWindow
     }
