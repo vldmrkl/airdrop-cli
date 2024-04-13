@@ -3,6 +3,10 @@
 A command-line tool that allows you to share files and URLs with Apple
 devices using AirDrop from your terminal.
 
+## Prerequisities
+- Xcode
+- Xcode Command Line Tools
+
 ## Installation
 
 `airdrop-cli` is available for install with [Homebrew](https://brew.sh/)
