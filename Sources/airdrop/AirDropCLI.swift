@@ -23,6 +23,8 @@ enum OptionType: String {
 
 class AirDropCLI:  NSObject, NSApplicationDelegate, NSSharingServiceDelegate {
     let consoleIO = ConsoleIO()
+    private var sharingService: NSSharingService?
+    private var shareWindow: NSWindow?
     private var isIndividualSharing = false
     private var individualSharingItems: [URL] = []
     private var individualSharingSuccessful = 0
@@ -78,6 +80,7 @@ class AirDropCLI:  NSObject, NSApplicationDelegate, NSSharingServiceDelegate {
         else {
             exit(2)
         }
+        self.sharingService = service
 
         var filesToShare: [URL] = []
         var invalidPaths: [String] = []
@@ -140,9 +143,12 @@ class AirDropCLI:  NSObject, NSApplicationDelegate, NSSharingServiceDelegate {
             guard let service: NSSharingService = NSSharingService(named: .sendViaAirDrop) else {
                 exit(2)
             }
+            self.sharingService = service
             shareNextItem(service: service, remainingItems: individualSharingItems)
         } else {
             consoleIO.writeMessage("✅ Sharing completed: \(items.count) successful")
+            self.sharingService = nil
+            shareWindow = nil
             exit(0)
         }
     }
@@ -155,9 +161,12 @@ class AirDropCLI:  NSObject, NSApplicationDelegate, NSSharingServiceDelegate {
             guard let service: NSSharingService = NSSharingService(named: .sendViaAirDrop) else {
                 exit(2)
             }
+            self.sharingService = service
             shareNextItem(service: service, remainingItems: individualSharingItems)
         } else {
             consoleIO.writeMessage(error.localizedDescription, to: .error)
+            self.sharingService = nil
+            shareWindow = nil
             exit(1)
         }
     }
@@ -178,6 +187,9 @@ class AirDropCLI:  NSObject, NSApplicationDelegate, NSSharingServiceDelegate {
         airDropMenuWindow.level = .popUpMenu
         airDropMenuWindow.makeKeyAndOrderFront(nil)
 
+        // Retain the window so it does not get deallocated while the share sheet is active.
+        shareWindow = airDropMenuWindow
+
         return airDropMenuWindow
     }
     
@@ -191,8 +203,11 @@ class AirDropCLI:  NSObject, NSApplicationDelegate, NSSharingServiceDelegate {
     }
     
     private func shareNextItem(service: NSSharingService, remainingItems: [URL]) {
+        self.sharingService = service
         guard !remainingItems.isEmpty else {
             consoleIO.writeMessage("✅ Sharing completed: \(individualSharingSuccessful) successful, \(individualSharingFailed) failed")
+            shareWindow = nil
+            self.sharingService = nil
             exit(individualSharingFailed > 0 ? 1 : 0)
         }
         
