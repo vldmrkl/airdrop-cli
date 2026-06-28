@@ -28,6 +28,9 @@ class AirDropCLI:  NSObject, NSApplicationDelegate, NSSharingServiceDelegate {
     private var individualSharingSuccessful = 0
     private var individualSharingFailed = 0
     private var sharingStartTime: Date?
+    private var sharingSourceWindow: NSWindow?
+    private var sharingCompleted = false
+    private var windowCloseObserver: NSObjectProtocol?
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         let argCount = Int(CommandLine.argc)
@@ -135,6 +138,8 @@ class AirDropCLI:  NSObject, NSApplicationDelegate, NSSharingServiceDelegate {
 
 
     func sharingService(_ sharingService: NSSharingService, didShareItems items: [Any]) {
+        sharingCompleted = true
+        closeSharingSourceWindow()
         if isIndividualSharing {
             individualSharingSuccessful += 1
             guard let service: NSSharingService = NSSharingService(named: .sendViaAirDrop) else {
@@ -148,10 +153,12 @@ class AirDropCLI:  NSObject, NSApplicationDelegate, NSSharingServiceDelegate {
     }
 
     func sharingService(_ sharingService: NSSharingService, didFailToShareItems items: [Any], error: Error) {
+        sharingCompleted = true
+        closeSharingSourceWindow()
         if isIndividualSharing {
             individualSharingFailed += 1
             consoleIO.writeMessage("Failed to share item: \(error.localizedDescription)", to: .error)
-            
+
             guard let service: NSSharingService = NSSharingService(named: .sendViaAirDrop) else {
                 exit(2)
             }
@@ -167,18 +174,46 @@ class AirDropCLI:  NSObject, NSApplicationDelegate, NSSharingServiceDelegate {
     }
 
     func sharingService(_ sharingService: NSSharingService, sourceWindowForShareItems items: [Any], sharingContentScope: UnsafeMutablePointer<NSSharingService.SharingContentScope>) -> NSWindow? {
-        let airDropMenuWindow = NSWindow(contentRect: .init(origin: .zero,
-                                                            size: .init(width: 1,
-                                                                        height: 1)),
-                                         styleMask: [.closable],
-                                         backing: .buffered,
-                                         defer: false)
+        let window = NSWindow(
+            contentRect: .init(origin: .zero, size: .init(width: 1, height: 1)),
+            styleMask: [.borderless],
+            backing: .buffered,
+            defer: false
+        )
+        window.center()
+        window.level = .popUpMenu
+        window.alphaValue = 0
+        window.isOpaque = false
+        window.backgroundColor = .clear
+        window.orderFront(nil)
+        sharingSourceWindow = window
 
-        airDropMenuWindow.center()
-        airDropMenuWindow.level = .popUpMenu
-        airDropMenuWindow.makeKeyAndOrderFront(nil)
+        // When the AirDrop picker is dismissed without selecting a recipient,
+        // no delegate method fires. Observe for the picker window closing so we can exit cleanly.
+        windowCloseObserver = NotificationCenter.default.addObserver(
+            forName: NSWindow.willCloseNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            guard let self = self,
+                  let closingWindow = notification.object as? NSWindow,
+                  closingWindow !== self.sharingSourceWindow,
+                  !self.sharingCompleted else { return }
+            // The AirDrop picker window closed without a share completing — user cancelled.
+            self.closeSharingSourceWindow()
+            exit(0)
+        }
 
-        return airDropMenuWindow
+        return window
+    }
+
+    private func closeSharingSourceWindow() {
+        if let observer = windowCloseObserver {
+            NotificationCenter.default.removeObserver(observer)
+            windowCloseObserver = nil
+        }
+        sharingSourceWindow?.close()
+        sharingSourceWindow = nil
     }
     
     private func shareItemsIndividually(service: NSSharingService, _ items: [URL]) {
